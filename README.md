@@ -3,7 +3,7 @@
 从 rlottie 提取的独立 Lottie 动画渲染模块，支持：
 - 解析 Lottie JSON 文件
 - 渲染指定帧为 ARGB32 像素数据
-- 跨平台支持 (Windows, ARM)
+- 跨平台支持 (Windows MSVC/MinGW, ARM)
 
 ## 目录结构
 
@@ -11,36 +11,48 @@
 lottie_renderer/
 ├── CMakeLists.txt          # CMake 主构建配置
 ├── config.h.in             # 配置模板
+├── build_mingw.bat         # MinGW 构建脚本
 ├── include/
-│   └── lottie_renderer.h   # 公共 API 头文件
+│   └── lottie_renderer.h   # 公共 C API 头文件
 ├── src/
 │   ├── lottie/             # Lottie 解析和动画逻辑
 │   ├── vector/             # 矢量图形渲染引擎
 │   └── lottie_renderer_api.cpp  # C API 实现
 ├── test/
-│   └── win/
-│       ├── win_test.cpp    # Windows 测试程序
-│       └── bmp_writer.h    # BMP 文件写入工具
-└── vs2019/
-    ├── lottie_renderer.sln     # VS 解决方案
-    ├── lottie_renderer.vcxproj # 静态库项目
-    ├── lottie_test.vcxproj     # 测试程序项目
-    └── config.h                # VS 配置文件
+│   ├── win/                # C++ 测试程序
+│   └── c_test/             # C 测试程序
+├── vs2019/                 # Visual Studio 解决方案
+└── docs/
+    └── PORTING.md          # 移植指南
 ```
 
 ## 构建方法
 
-### Windows - Visual Studio 解决方案（推荐）
+### Windows - Visual Studio (推荐)
 
-直接使用 Visual Studio 打开解决方案文件：
-
+直接打开解决方案文件：
 ```
 lottie_renderer/vs2019/lottie_renderer.sln
 ```
 
-支持 Debug/Release 和 Win32/x64 配置。
+### Windows - MinGW
 
-### Windows - CMake
+```batch
+# 方法1: 使用构建脚本
+build_mingw.bat Release
+
+# 方法2: 手动 CMake
+set PATH=C:\mingw64\bin;%PATH%
+cmake -G "MinGW Makefiles" -B build_mingw -DCMAKE_BUILD_TYPE=Release
+cmake --build build_mingw
+```
+
+输出文件：
+- 库文件: `build_mingw/liblottie_renderer.a`
+- C 测试: `build_mingw/bin/lottie_c_test.exe`
+- C++ 测试: `build_mingw/bin/lottie_test.exe`
+
+### Windows - CMake + MSVC
 
 ```bash
 mkdir build
@@ -52,10 +64,22 @@ cmake --build . --config Release
 ### ARM 交叉编译
 
 ```bash
-mkdir build
-cd build
 cmake .. -DCMAKE_TOOLCHAIN_FILE=<arm-toolchain.cmake>
 cmake --build .
+```
+
+## 移植到其他项目
+
+详见 [移植指南](docs/PORTING.md)
+
+快速开始：
+```bash
+# 复制文件
+cp include/lottie_renderer.h  <your_project>/include/
+cp build_mingw/liblottie_renderer.a  <your_project>/lib/
+
+# 编译链接
+gcc -I./include main.c -L./lib -llottie_renderer -lstdc++ -lshlwapi -o app
 ```
 
 ## 使用方法
