@@ -23,6 +23,7 @@ lottie_renderer/
 │   └── c_test/             # C 测试程序
 ├── vs2019/                 # Visual Studio 解决方案
 └── docs/
+    ├── BUILD.md            # 编译指南
     └── PORTING.md          # 移植指南
 ```
 
@@ -67,6 +68,11 @@ cmake --build . --config Release
 cmake .. -DCMAKE_TOOLCHAIN_FILE=<arm-toolchain.cmake>
 cmake --build .
 ```
+
+## 文档
+
+- [编译指南](docs/BUILD.md) - 详细的编译步骤说明
+- [移植指南](docs/PORTING.md) - 如何移植到其他项目
 
 ## 移植到其他项目
 
