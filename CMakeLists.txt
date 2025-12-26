@@ -62,6 +62,18 @@ if(MSVC)
         _CRT_SECURE_NO_WARNINGS
         NOMINMAX
     )
+elseif(MINGW)
+    # MinGW 特定配置
+    target_compile_options(lottie_renderer PRIVATE
+        -Wall
+        -Wextra
+        -Wno-unused-parameter
+        -fvisibility=hidden
+    )
+    target_compile_definitions(lottie_renderer PRIVATE
+        _WIN32_WINNT=0x0601
+        NOMINMAX
+    )
 else()
     target_compile_options(lottie_renderer PRIVATE
         -Wall

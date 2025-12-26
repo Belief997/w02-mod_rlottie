@@ -14,9 +14,24 @@ target_include_directories(lottie_c_test PRIVATE
     ${CMAKE_SOURCE_DIR}/include
 )
 
-# Force C compilation
+# Windows specific libraries (for GDI playback)
+if(WIN32)
+    target_link_libraries(lottie_c_test PRIVATE
+        gdi32
+        user32
+    )
+endif()
+
+# MinGW specific: link C++ standard library for lottie_renderer
+if(MINGW)
+    target_link_libraries(lottie_c_test PRIVATE
+        stdc++
+    )
+endif()
+
+# Force C compilation for this target
 set_target_properties(lottie_c_test PROPERTIES
-    LINKER_LANGUAGE C
+    LINKER_LANGUAGE CXX
 )
 
 # Output directory
