@@ -14,6 +14,8 @@ x86/
 Debug/
 Release/
 Win32/
+build/
+build_mingw/
 *.obj
 *.pdb
 *.ilk
@@ -21,6 +23,7 @@ Win32/
 *.dll
 *.lib
 *.exp
+*.a
 
 # CMake
 CMakeCache.txt
