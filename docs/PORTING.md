@@ -175,7 +175,23 @@ while (playing) {
 - 位布局: `0xAARRGGBB`
 - Alpha 预乘: RGB 值已乘以 Alpha
 
-#### 转换为标准 RGBA
+#### 使用内置转换函数 (推荐)
+
+```c
+// 渲染帧
+lottie_animation_render(anim, frameNo, &surface, 1);
+
+// 转换为非预乘格式 (straight alpha)
+lottie_convert_to_straight_alpha(buffer, width, height);
+
+// 或转换为 RGBA 格式 (用于 OpenGL/PNG)
+lottie_convert_argb_to_rgba(buffer, width, height);
+
+// 或一步完成: 非预乘 + RGBA
+lottie_convert_to_straight_rgba(buffer, width, height);
+```
+
+#### 手动转换为标准 RGBA
 
 ```c
 void premultiplied_to_straight(uint32_t* buffer, size_t count) {
@@ -238,6 +254,9 @@ uint32_t blend_with_checker(uint32_t pixel, int x, int y) {
 | `lottie_free_string()` | 释放字符串 |
 | `lottie_animation_destroy()` | 释放动画资源 |
 | `lottie_configure_cache_size()` | 配置缓存大小 |
+| `lottie_convert_to_straight_alpha()` | 预乘转非预乘 (ARGB) |
+| `lottie_convert_argb_to_rgba()` | ARGB 转 RGBA |
+| `lottie_convert_to_straight_rgba()` | 预乘 ARGB 转非预乘 RGBA |
 
 ### 6. 平台注意事项
 

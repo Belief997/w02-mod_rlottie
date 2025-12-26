@@ -245,3 +245,83 @@ void lottie_configure_cache_size(size_t cacheSize)
 {
     rlottie::configureModelCacheSize(cacheSize);
 }
+
+/* ========== Pixel Format Conversion ========== */
+
+void lottie_convert_to_straight_alpha(uint32_t* buffer, size_t width, size_t height)
+{
+    if (!buffer || width == 0 || height == 0) {
+        return;
+    }
+    
+    size_t count = width * height;
+    for (size_t i = 0; i < count; i++) {
+        uint32_t pixel = buffer[i];
+        uint8_t a = (pixel >> 24) & 0xFF;
+        
+        if (a == 0) {
+            // Fully transparent - set RGB to 0
+            buffer[i] = 0;
+        } else if (a < 255) {
+            // Semi-transparent - unpremultiply
+            uint8_t r = (pixel >> 16) & 0xFF;
+            uint8_t g = (pixel >> 8) & 0xFF;
+            uint8_t b = pixel & 0xFF;
+            
+            // Unpremultiply: original = premultiplied * 255 / alpha
+            r = (uint8_t)((r * 255) / a);
+            g = (uint8_t)((g * 255) / a);
+            b = (uint8_t)((b * 255) / a);
+            
+            buffer[i] = ((uint32_t)a << 24) | ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
+        }
+        // a == 255: fully opaque, no change needed
+    }
+}
+
+void lottie_convert_argb_to_rgba(uint32_t* buffer, size_t width, size_t height)
+{
+    if (!buffer || width == 0 || height == 0) {
+        return;
+    }
+    
+    size_t count = width * height;
+    for (size_t i = 0; i < count; i++) {
+        uint32_t pixel = buffer[i];
+        // ARGB: 0xAARRGGBB -> RGBA: 0xAABBGGRR (swap R and B)
+        uint8_t a = (pixel >> 24) & 0xFF;
+        uint8_t r = (pixel >> 16) & 0xFF;
+        uint8_t g = (pixel >> 8) & 0xFF;
+        uint8_t b = pixel & 0xFF;
+        
+        buffer[i] = ((uint32_t)a << 24) | ((uint32_t)b << 16) | ((uint32_t)g << 8) | r;
+    }
+}
+
+void lottie_convert_to_straight_rgba(uint32_t* buffer, size_t width, size_t height)
+{
+    if (!buffer || width == 0 || height == 0) {
+        return;
+    }
+    
+    size_t count = width * height;
+    for (size_t i = 0; i < count; i++) {
+        uint32_t pixel = buffer[i];
+        uint8_t a = (pixel >> 24) & 0xFF;
+        uint8_t r = (pixel >> 16) & 0xFF;
+        uint8_t g = (pixel >> 8) & 0xFF;
+        uint8_t b = pixel & 0xFF;
+        
+        if (a == 0) {
+            buffer[i] = 0;
+        } else if (a < 255) {
+            // Unpremultiply
+            r = (uint8_t)((r * 255) / a);
+            g = (uint8_t)((g * 255) / a);
+            b = (uint8_t)((b * 255) / a);
+        }
+        
+        // Convert ARGB to RGBA (swap R and B)
+        buffer[i] = ((uint32_t)a << 24) | ((uint32_t)b << 16) | ((uint32_t)g << 8) | r;
+    }
+}

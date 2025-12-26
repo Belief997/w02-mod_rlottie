@@ -171,6 +171,48 @@ void lottie_animation_destroy(LottieAnimationHandle handle);
  */
 void lottie_configure_cache_size(size_t cacheSize);
 
+/* ========== Pixel Format Conversion ========== */
+
+/**
+ * Convert premultiplied ARGB32 to straight (non-premultiplied) ARGB32
+ * 
+ * The render output is premultiplied alpha format where RGB values are
+ * pre-multiplied by alpha. This function converts to straight alpha format.
+ * 
+ * @param buffer Pixel buffer to convert (in-place)
+ * @param width Image width
+ * @param height Image height
+ * 
+ * Pixel format (little-endian memory layout):
+ *   Input:  [B*A, G*A, R*A, A] (premultiplied)
+ *   Output: [B, G, R, A] (straight)
+ */
+void lottie_convert_to_straight_alpha(uint32_t* buffer, size_t width, size_t height);
+
+/**
+ * Convert ARGB32 to RGBA32 format
+ * 
+ * @param buffer Pixel buffer to convert (in-place)
+ * @param width Image width
+ * @param height Image height
+ * 
+ * Pixel format conversion:
+ *   Input:  0xAARRGGBB (ARGB)
+ *   Output: 0xAABBGGRR (RGBA, for OpenGL/PNG)
+ */
+void lottie_convert_argb_to_rgba(uint32_t* buffer, size_t width, size_t height);
+
+/**
+ * Convert premultiplied ARGB32 to straight RGBA32
+ * 
+ * Combines unpremultiply and ARGB->RGBA conversion in one pass.
+ * 
+ * @param buffer Pixel buffer to convert (in-place)
+ * @param width Image width
+ * @param height Image height
+ */
+void lottie_convert_to_straight_rgba(uint32_t* buffer, size_t width, size_t height);
+
 #ifdef __cplusplus
 }
 #endif
